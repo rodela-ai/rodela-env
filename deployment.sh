@@ -63,7 +63,7 @@ install_kafka () {
   helm repo add licenseware https://licenseware.github.io/charts/
   helm repo update
 
-  helm upgrade -i install kafka oci://registry-1.docker.io/bitnamicharts/kafka -f data/kafka/values.yaml --namespace $2
+  helm upgrade -i kafka oci://registry-1.docker.io/bitnamicharts/kafka -f data/kafka/values.yaml --namespace $2
   helm upgrade -i schema-registry  oci://registry-1.docker.io/bitnamicharts/schema-registry -f data/schema-registry/values.yaml --namespace $2
   # TODO: repair schema-registry
   #helm upgrade -i schema-registry-ui cloudnativeapp/schema-registry-ui -f data/schema-registry-ui/values.yaml --namespace $2
