@@ -31,6 +31,7 @@ install_ingress () {
     --selector=app.kubernetes.io/component=controller \
     --timeout=90s
   sleep 5
+  echo "DONE (check errors)"
 }
 
 deploy_metricserver() {
