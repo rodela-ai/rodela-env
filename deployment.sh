@@ -7,6 +7,15 @@ local_set_gpu_use () {
   echo -e "deploying $FUNCNAME... "
   sudo nvidia-ctk runtime configure --runtime=docker --set-as-default
   sudo systemctl restart docker
+  sudo sed -i '/accept-nvidia-visible-devices-as-volume-mounts/c\accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml
+  # https://github.com/NVIDIA/nvidia-docker/issues/614#issuecomment-423991632
+  docker exec -ti substratus-control-plane ln -s /sbin/ldconfig /sbin/ldconfig.real
+  helm repo add nvidia https://helm.ngc.nvidia.com/nvidia || true
+  helm repo update
+  helm install --wait --generate-name \
+     -n gpu-operator --create-namespace \
+      nvidia/gpu-operator --set driver.enabled=false
+
   echo "DONE (check errors)"
 }
 
@@ -19,6 +28,25 @@ deploy_kind_cluster () {
   deploy_metricserver $1 $2
   echo "DONE (check errors)"
   sleep 5
+}
+
+test_gpu_use () {
+
+kubectl apply -n $2 -f - << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cuda-vectoradd
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: cuda-vectoradd
+    image: "nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda11.7.1-ubuntu20.04"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+EOF
+
 }
 
 install_ingress () {
@@ -100,8 +128,8 @@ then
 fi
 if [ "$1" == "local_kind" ]
 then
+  local_set_gpu_use
   deploy_kind_cluster $1 $2
-
 fi
 
 if [ "$1" == "gpu" ]

@@ -4,6 +4,10 @@
 This environment is a environment for AI, Event-driven complete environment
 
 ## TODO
+[ ] add vllm
+[ ] add graphRAG 
+[ ] add starrocks
+[ ] add datapanels
 [ ] add security to all components
 [ ] add https ingress
 [ ] add roles

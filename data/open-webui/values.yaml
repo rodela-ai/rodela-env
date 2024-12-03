@@ -40,8 +40,8 @@ replicaCount: 1
 # -- Open WebUI image tags can be found here: https://github.com/open-webui/open-webui/pkgs/container/open-webui
 image:
   repository: ghcr.io/open-webui/open-webui
-  tag: ""
-  pullPolicy: "IfNotPresent"
+  tag: "latest"
+  pullPolicy: "Always"
 
 serviceAccount:
   enable: true

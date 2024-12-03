@@ -48,13 +48,13 @@ image:
   repository: ollama/ollama
 
   ## @param image.tag Image tag
-  tag: 0.4.5
+  tag: latest
 
   ## @param image.digest Image digest
   digest: ""
 
   ## @param image.pullPolicy Image pull policy
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 
 # -- Docker registry secret names as an array
