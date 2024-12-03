@@ -9,14 +9,17 @@ local_set_gpu_use () {
   sudo systemctl restart docker
   sudo sed -i '/accept-nvidia-visible-devices-as-volume-mounts/c\accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml
   # https://github.com/NVIDIA/nvidia-docker/issues/614#issuecomment-423991632
+  echo "DONE (check errors)"
+}
+
+post_kind_cluster_gpu() {
+  echo -e "deploying $FUNCNAME... "
   docker exec -ti substratus-control-plane ln -s /sbin/ldconfig /sbin/ldconfig.real
   helm repo add nvidia https://helm.ngc.nvidia.com/nvidia || true
   helm repo update
   helm install --wait --generate-name \
      -n gpu-operator --create-namespace \
       nvidia/gpu-operator --set driver.enabled=false
-
-  echo "DONE (check errors)"
 }
 
 deploy_kind_cluster () {
@@ -32,7 +35,7 @@ deploy_kind_cluster () {
 
 test_gpu_use () {
 
-kubectl apply -n $2 -f - << EOF
+kubectl apply -f - << EOF
 apiVersion: v1
 kind: Pod
 metadata:
@@ -128,8 +131,10 @@ then
 fi
 if [ "$1" == "local_kind" ]
 then
-  local_set_gpu_use
+#  local_set_gpu_use $1 $2 
   deploy_kind_cluster $1 $2
+#  post_kind_cluster_gpu $1 $2
+#  test_gpu_use $1 $2 
 fi
 
 if [ "$1" == "gpu" ]
