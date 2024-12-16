@@ -54,6 +54,7 @@ EOF
 
 install_ingress () {
   echo -e "deploying $FUNCNAME... "
+  mkdir -p data/ingress/filesystem
   kubectl apply -f data/ingress/deploy-ingress-nginx.yaml
   # kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
   sleep 5
@@ -67,6 +68,7 @@ install_ingress () {
 
 deploy_metricserver() {
   echo -e "deploying $FUNCNAME... "
+  mkdir -p data/metrics-server/filesystem
   helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
   helm repo update
   helm upgrade --install metrics-server metrics-server/metrics-server -f data/metrics-server/values.yaml
@@ -75,6 +77,7 @@ deploy_metricserver() {
 
 install_ollama () {
   echo -e "deploying $FUNCNAME... "
+  mkdir -p data/ollama/filesystem
   helm repo add cowboysysop https://cowboysysop.github.io/charts/
   helm upgrade --install ollama cowboysysop/ollama --namespace $2 -f data/ollama/values.yaml
   echo "DONE (check errors)"
@@ -83,6 +86,7 @@ install_ollama () {
 install_open-webui () {
 # TODO: add security
     echo -e "deploying $FUNCNAME... "
+    mkdir -p data/open-webui/filesystem
     helm repo add open-webui https://helm.openwebui.com/
     helm repo update
     helm upgrade -i openwebui open-webui/open-webui --namespace $2 -f data/open-webui/values.yaml
@@ -91,21 +95,42 @@ install_open-webui () {
 
 install_kafka () {
   echo -e "deploying $FUNCNAME... "
+
   helm repo add cloudnativeapp https://cloudnativeapp.github.io/charts/curated/
   helm repo add licenseware https://licenseware.github.io/charts/
   helm repo update
-
+  mkdir -p data/kafka/filesystem
   helm upgrade -i kafka oci://registry-1.docker.io/bitnamicharts/kafka -f data/kafka/values.yaml --namespace $2
+  mkdir -p data/schema-registry/filesystem
   helm upgrade -i schema-registry  oci://registry-1.docker.io/bitnamicharts/schema-registry -f data/schema-registry/values.yaml --namespace $2
+
   # TODO: repair schema-registry
   #helm upgrade -i schema-registry-ui cloudnativeapp/schema-registry-ui -f data/schema-registry-ui/values.yaml --namespace $2
+  mkdir -p data/ksqldb/filesystem
   helm upgrade -i ksqldb licenseware/ksqldb -f data/ksqldb/values.yaml --namespace $2
   echo "DONE (check errors)"
+}
+
+install_docker_registry() {
+  ## todo: docker registry and security
+  echo -e "deploying $FUNCNAME... "
+  mkdir -p data/ksqldb/filesystem
+  helm repo add twuni https://helm.twun.io
+  helm install twuni/docker-registry -n $2 -f data/docker-registry/values.yaml
+}
+
+install_wekan() {
+  ## TODO: wekan and security
+  echo -e "deploying $FUNCNAME... "
+  mkdir -p data/wekan/filesystem
+  helm repo add wekan https://wekan.github.io/charts
+  helm install wekan wekan/wekan -n $2 -f data/wekan/values.yaml
 }
 
 install_vector () {
   # TODO: add security
   echo -e "deploying $FUNCNAME... "
+  mkdir -p data/vector/filesystem
   helm repo add qdrant https://qdrant.github.io/qdrant-helm
   helm repo update
   helm upgrade -i qdrant qdrant/qdrant -n $2 -f data/qdrant/values.yaml
@@ -115,6 +140,7 @@ install_vector () {
 install_testingLinux () {
 
   echo -e "deploying $FUNCNAME... "
+  mkdir -p data/testingLinux/filesystem
   # ubuntu for testing
   helm repo add open https://simonmisencik.github.io/helm-charts
   helm repo update
