@@ -29,7 +29,7 @@ nodes:
       - containerPort: 443
         hostPort: 443
         protocol: TCP
-  {{- range $gpu := until numGPUs }}
+{{- range $gpu := until numGPUs }}
 - role: worker
   extraMounts:
     # We inject all NVIDIA GPUs using the nvidia-container-runtime.
@@ -37,4 +37,4 @@ nodes:
     # in `/etc/nvidia-container-runtime/config.toml`
     - hostPath: /dev/null
       containerPath: /var/run/nvidia-container-devices/{{ $gpu }}
-  {{- end }}
+{{- end }}
