@@ -3,34 +3,28 @@
 # author: francisco josé navarrete pan paco.j.navarrete@gmail.com
 # Functions
 
-local_set_gpu_use () {
-  echo -e "deploying $FUNCNAME... "
-  sudo nvidia-ctk runtime configure --runtime=docker --set-as-default
-  sudo systemctl restart docker
-  sudo sed -i '/accept-nvidia-visible-devices-as-volume-mounts/c\accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml
-  # https://github.com/NVIDIA/nvidia-docker/issues/614#issuecomment-423991632
-  echo "DONE (check errors)"
-}
-
-post_kind_cluster_gpu() {
-  echo -e "deploying $FUNCNAME... "
-  docker exec -ti substratus-control-plane ln -s /sbin/ldconfig /sbin/ldconfig.real
-  helm repo add nvidia https://helm.ngc.nvidia.com/nvidia || true
-  helm repo update
-  helm install --wait --generate-name \
-     -n gpu-operator --create-namespace \
-      nvidia/gpu-operator --set driver.enabled=false
-}
-
 deploy_kind_cluster () {
   echo -e "deploying $FUNCNAME... "
-  kind create cluster -n $2 --config data/kind/kind.yaml
+  nvkind cluster create --name=$2 --config-template=data/kind/kind-gpu.yaml
+
+#  nvkind create cluster -n $2 --config data/kind/kind-gpu.yaml
   # TODO: add ingress and on values.yaml also
   kubectl create namespace $2
   install_ingress $1 $2
   deploy_metricserver $1 $2
   echo "DONE (check errors)"
   sleep 5
+}
+
+deploy_namespace () {
+  echo -e "deploying $FUNCNAME... "
+
+  kubectl create namespace $2
+  install_ingress $1 $2
+  deploy_metricserver $1 $2
+  echo "DONE (check errors)"
+  sleep 5
+
 }
 
 test_gpu_use () {
@@ -126,20 +120,21 @@ install_testingLinux () {
 if [ "$1" == "destroy" ]
 then
   kubectl delete namespace $2
-  kind delete clusters $2
+  nvkind delete clusters $2
   exit
 fi
-if [ "$1" == "local_kind" ]
+if [ "$1" == "nvkind" ]
 then
-#  local_set_gpu_use $1 $2 
+  local_set_gpu_use $1 $2 
   deploy_kind_cluster $1 $2
-#  post_kind_cluster_gpu $1 $2
-#  test_gpu_use $1 $2 
+  #post_kind_cluster_gpu $1 $2
+  test_gpu_use $1 $2 
 fi
 
-if [ "$1" == "gpu" ]
+if [ "$1" == "none" ]
 then
-  local_set_gpu_use $1 $2
+  deploy_namespace $1 $2 
+  test_gpu_use $1 $2 
 fi
 
 if [ "$1" == "remote" ]

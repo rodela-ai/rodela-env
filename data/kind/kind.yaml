@@ -1,6 +1,6 @@
 apiVersion: kind.x-k8s.io/v1alpha4
 kind: Cluster
-name: rodela
+name: agnttic
 nodes:
   - role: control-plane
     kubeadmConfigPatches:

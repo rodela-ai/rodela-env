@@ -73,7 +73,7 @@ ollama:
 
     # -- Specify the number of GPU
     # If you use MIG section below then this parameter is ignored
-    number: 0
+    number: 1
 
     # -- only for nvidia cards; change to (example) 'nvidia.com/mig-1g.10gb' to use MIG slice
     nvidiaResource: "nvidia.com/gpu"
@@ -263,7 +263,7 @@ ingress:
   ## @param ingress.hosts[0].host Hostname to your Ollama installation
   ## @param ingress.hosts[0].paths Paths within the url structure
   hosts:
-    - host: ollama.rodela
+    - host: ollama.agnttic
       paths:
         - /
 
