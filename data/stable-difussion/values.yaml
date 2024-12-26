@@ -67,7 +67,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: stable-difussion.agnttic
+    - host: stable-difussion.rodela
       paths:
         - path: /
           pathType: ImplementationSpecific

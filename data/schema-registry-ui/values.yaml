@@ -26,7 +26,7 @@ ingress:
   annotations: {}
   path: /
   hosts:
-    - schema-registry-ui.agnttic
+    - schema-registry-ui.rodela
   tls: []
 
 resources: {}
