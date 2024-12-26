@@ -3,7 +3,7 @@ kind: Cluster
 name: rodela
 nodes:
   - role: control-plane
-{{- range $gpu := until numGPUs }}
+      {{- range $gpu := until numGPUs }}
     kubeadmConfigPatches:
       - |
         kind: InitConfiguration
@@ -11,21 +11,21 @@ nodes:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
     extraMounts:
-    - hostPath: /dev/null
-      containerPath: /var/run/nvidia-container-devices/all
-    extraPortMappings:
-      - containerPort: 80
-        hostPort: 80
-        protocol: TCP
-      - containerPort: 443
-        hostPort: 443
-        protocol: TCP
-    extraMounts:
-      # We inject all NVIDIA GPUs using the nvidia-container-runtime.
-      # This requires `accept-nvidia-visible-devices-as-volume-mounts = true` be set
-      # in `/etc/nvidia-container-runtime/config.toml`
       - hostPath: /dev/null
-        containerPath: /var/run/nvidia-container-devices/{{ $gpu }}
+        containerPath: /var/run/nvidia-container-devices/all
+extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+extraMounts:
+  # We inject all NVIDIA GPUs using the nvidia-container-runtime.
+  # This requires `accept-nvidia-visible-devices-as-volume-mounts = true` be set
+  # in `/etc/nvidia-container-runtime/config.toml`
+  - hostPath: /dev/null
+    containerPath: /var/run/nvidia-container-devices/{{ $gpu }}
 
 #  - role: worker
 #  - role: worker
