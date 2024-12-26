@@ -125,7 +125,7 @@ then
 fi
 if [ "$1" == "nvkind" ]
 then
-  local_set_gpu_use $1 $2 
+  #local_set_gpu_use $1 $2 
   deploy_kind_cluster $1 $2
   #post_kind_cluster_gpu $1 $2
   test_gpu_use $1 $2 
