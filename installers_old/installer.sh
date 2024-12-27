@@ -2,13 +2,13 @@
 
 
 VERSION=1.30.8-1.1
-
+PKG_VERSION=1.30
 
 echo "preflight..."
 yes | nerdctl system prune
 
 yes | kubeadm reset
-sudo apt-get purge containerd.io kubeadm kubectl kubelet kubernetes-cni kube*
+sudo apt-get purge etcd containerd.io kubeadm kubectl kubelet kubernetes-cni kube*
 sudo apt-get autoremove
 sudo rm -rf ~/.kube
 
@@ -36,7 +36,7 @@ echo " DONE"
 
 echo "cleaning packages..."
 
-PACKAGES="kubernetes-cni kubelet kubeadm helm cri-o cri-o-runc containernetworking containernetworking-plugins"
+PACKAGES="kubernetes-cni kubelet kubeadm helm etcd cri-o cri-o-runc containernetworking containernetworking-plugins"
 sudo apt-mark unhold $PACKAGES
 sudo apt-get remove --purge $PACKAGES -y 
 sudo rm -rf /etc/kubernetes
@@ -49,7 +49,7 @@ sudo rm -rf /etc/cni/net.d
 sudo rm -rf /etc/kubernetes
 sudo rm -rf /opt/containerd
 sudo rm -rf /var/lib/etcd
-#sudo ./clean_storage.sh
+sudo ./clean_storage.sh
 sudo systemctl stop kubepods*
 
 echo " DONE"
@@ -61,11 +61,15 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dear
     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
+sudo mkdir -p /var/lib/containerd/io.containerd.content.v1.content/ingest
+sudo systemctl restart containerd
+
 echo "docker cli" 
 # Add Docker's official GPG key:
 sudo apt-get update
 sudo apt-get install apt-transport-https ca-certificates curl gpg
 sudo install -m 0755 -d /etc/apt/keyrings
+
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
  
@@ -77,8 +81,8 @@ echo \
 sudo apt-get update
 
 echo "kubernetes"
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v$PKG_VERSION/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v$PKG_VERSION/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 
 echo "installing nvidia-container-toolkit..." -n
@@ -167,8 +171,6 @@ sudo kubeadm init --v=5 --pod-network-cidr=10.244.0.0/16
 #--apiserver-advertise-address=0.0.0.0 
 #--cri-socket=unix:///var/run/crio/crio.sock
 #sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --cri-socket=unix:///var/run/crio/crio.sock
-
-
 echo " DONE"
 sleep 30
 echo "installing network" -n
