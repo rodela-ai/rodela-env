@@ -107,12 +107,12 @@ install_vector () {
 }
 
 install_testingLinux () {
-
-  echo -e "deploying $FUNCNAME... "
-  # ubuntu for testing
-  helm repo add open https://simonmisencik.github.io/helm-charts
-  helm repo update
-  helm upgrade -i testlin open/ubuntu -n $2
+ # TODO: change image, risk backdoor
+ # echo -e "deploying $FUNCNAME... "
+ # # ubuntu for testing
+ # helm repo add open https://simonmisencik.github.io/helm-charts
+ # helm repo update
+ # helm upgrade -i testlin open/ubuntu -n $2
 
   echo "DONE (check errors)"
 }
@@ -152,7 +152,7 @@ install_ollama $1 $2
 install_open-webui $1 $2
 install_kafka $1 $2
 install_vector $1 $2
-install_testingLinux $1 $2
+#install_testingLinux $1 $2
 echo "Also renember to edit the configuration files under the data directory."
 
 
