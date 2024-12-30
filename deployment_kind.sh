@@ -46,6 +46,7 @@ EOF
 
 install_ingress () {
   echo -e "deploying $FUNCNAME... "
+  # TODO: Solve this, to multiple namespaces, not working
   kubectl apply -f data_ingress/one_namespace_deploy-ingress-nginx.yaml
   # kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
   sleep 5
