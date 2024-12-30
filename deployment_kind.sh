@@ -14,15 +14,13 @@ deploy_namespace () {
   kubectl create namespace $2
   echo "DONE (check errors)"
   sleep 5
-
 }
 
 deploy_kind_cluster () {
   echo -e "deploying $FUNCNAME... "
   nvkind cluster create --name=$2 --config-template=data_$2/kind/kind-gpu.yaml
   # TODO: add ingress and on values.yaml also
-  deploy_namespace $1 $2
-  install_ingress $1 $2
+
   echo "DONE (check errors)"
   sleep 5
 }
@@ -109,7 +107,7 @@ install_vector () {
 
 install_testingLinux () {
  # TODO: change image, risk backdoor
- # echo -e "deploying $FUNCNAME... "
+ echo -e "deploying $FUNCNAME... "
  # # ubuntu for testing
  # helm repo add open https://simonmisencik.github.io/helm-charts
  # helm repo update
@@ -118,12 +116,29 @@ install_testingLinux () {
   echo "DONE (check errors)"
 }
 
+deploy_ingress () {
+    echo -e "deploying $FUNCNAME... "
+    install_ingress $1 $2
+    echo "DONE (check errors)"
+}
+
+install_rodela () {
+    echo -e "deploying $FUNCNAME... "
+    install_ollama $1 $2
+    install_open-webui $1 $2
+    install_kafka $1 $2
+    install_vector $1 $2
+    #install_testingLinux $1 $2
+    echo "DONE (check errors)"
+}
+
 if [ "$1" == "destroy" ]
 then
   kubectl delete namespace $2
   nvkind delete clusters $2
   exit
 fi
+
 if [ "$1" == "nvkind" ]
 then
   #local_set_gpu_use $1 $2 
@@ -149,11 +164,16 @@ then
   exit
 fi
 
-install_ollama $1 $2
-install_open-webui $1 $2
-install_kafka $1 $2
-install_vector $1 $2
-#install_testingLinux $1 $2
+if [ "$1" == "install_rodela" ]
+  then
+  deploy_namespace $1 $2
+  install_rodela $1 $2
+fi
+if [ "$1" == "install_ingress" ]
+  then
+  install_ingress $1 $2
+fi
+
 echo "Also renember to edit the configuration files under the data directory."
 
 
