@@ -46,7 +46,7 @@ EOF
 
 install_ingress () {
   echo -e "deploying $FUNCNAME... "
-  kubectl apply -f data_$2/ingress/deploy-ingress-nginx.yaml
+  kubectl apply -f data_ingress/deploy-ingress-nginx.yaml
   # kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/one_namespace_deploy-ingress-nginx.yaml
   sleep 5
   kubectl wait --namespace ingress-nginx \
