@@ -263,7 +263,7 @@ ingress:
   ## @param ingress.hosts[0].host Hostname to your Ollama installation
   ## @param ingress.hosts[0].paths Paths within the url structure
   hosts:
-    - host: ollama...WORKSPACE..
+    - host: ollama.agnttic
       paths:
         - /
 

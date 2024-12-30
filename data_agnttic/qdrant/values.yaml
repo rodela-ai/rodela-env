@@ -45,7 +45,7 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: alb
   hosts:
-    - host: qdrant...WORKSPACE..
+    - host: qdrant.agnttic
       paths:
         - path: /
           pathType: Prefix
