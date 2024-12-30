@@ -139,7 +139,7 @@ then
   exit
 fi
 
-if [ "$1" == "nvkind" ]
+if [ "$1" == "deploy_nvkind" ]
 then
   #local_set_gpu_use $1 $2 
   deploy_kind_cluster $1 $2
@@ -148,13 +148,7 @@ then
   #test_gpu_use $1 $2 
 fi
 
-if [ "$1" == "none" ]
-then
-  deploy_namespace $1 $2 
-  test_gpu_use $1 $2 
-fi
-
-if [ "$1" == "remote" ]
+if [ "$1" == "deploy_remote" ]
 then
   # TODO: develop this part
   echo "If you are running this script on cloud, please pay attention to enable GPU support"
@@ -164,12 +158,12 @@ then
   exit
 fi
 
-if [ "$1" == "install_rodela" ]
+if [ "$1" == "deploy_rodela" ]
   then
   deploy_namespace $1 $2
   install_rodela $1 $2
 fi
-if [ "$1" == "install_ingress" ]
+if [ "$1" == "deploy_ingress" ]
   then
   install_ingress $1 $2
 fi
